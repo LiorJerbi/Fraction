@@ -88,18 +88,18 @@ using namespace ariel;
     Fraction Fraction::operator+(const Fraction& other) const {
         int ndenom = lcm(_denominator, other._denominator);
         long long nnume = static_cast<long long>(_numerator) * (ndenom / _denominator) + static_cast<long long>(other._numerator) * (ndenom / other._denominator);
-        if (nnume > std::numeric_limits<int>::max() || nnume < std::numeric_limits<int>::min()) {
-            throw std::overflow_error("Addition causes overflow or underflow");
+        if (nnume > numeric_limits<int>::max() || nnume < numeric_limits<int>::min()) {
+            throw overflow_error("Addition causes overflow or underflow");
         }
         return Fraction(static_cast<int>(nnume), ndenom).reduce();
     }
 
     Fraction Fraction::operator-(const Fraction& other) const {
-        if (static_cast<long long>(_numerator) - other._numerator > std::numeric_limits<int>::max() ||
-            static_cast<long long>(_numerator) - other._numerator < std::numeric_limits<int>::min() ||
-            static_cast<long long>(_denominator) - other._denominator > std::numeric_limits<int>::max() ||
-            static_cast<long long>(_denominator) - other._denominator < std::numeric_limits<int>::min()) {
-            throw std::overflow_error("Subtraction causes overflow or underflow");
+        if (static_cast<long long>(_numerator) - other._numerator > numeric_limits<int>::max() ||
+            static_cast<long long>(_numerator) - other._numerator < numeric_limits<int>::min() ||
+            static_cast<long long>(_denominator) - other._denominator > numeric_limits<int>::max() ||
+            static_cast<long long>(_denominator) - other._denominator < numeric_limits<int>::min()) {
+            throw overflow_error("Subtraction causes overflow or underflow");
         }
         Fraction neg_other(-other._numerator, other._denominator);
         return *this + neg_other;
@@ -108,25 +108,25 @@ using namespace ariel;
     Fraction Fraction::operator*(const Fraction& other) const {
         long long nnume = static_cast<long long>(_numerator) * other._numerator;
         long long ndenom = static_cast<long long>(_denominator) * other._denominator;
-        if (nnume > std::numeric_limits<int>::max() || nnume < std::numeric_limits<int>::min() ||
-            ndenom > std::numeric_limits<int>::max() || ndenom < std::numeric_limits<int>::min()) {
-            throw std::overflow_error("Multiplication causes overflow or underflow");
+        if (nnume > numeric_limits<int>::max() || nnume < numeric_limits<int>::min() ||
+            ndenom > numeric_limits<int>::max() || ndenom < numeric_limits<int>::min()) {
+            throw overflow_error("Multiplication causes overflow or underflow");
         }
         return Fraction(static_cast<int>(nnume), static_cast<int>(ndenom)).reduce();
     }
     
     Fraction Fraction::operator/(const Fraction& other) const {
         if (other._numerator == 0) {
-            throw std::runtime_error("Division by zero!");
+            throw runtime_error("Division by zero!");
         }
         Fraction copy1 = *this;
         Fraction copy2 = other;
 
         long long nnume = static_cast<long long>(copy1._numerator) * copy2._denominator;
         long long ndenom = static_cast<long long>(copy1._denominator) * copy2._numerator;
-        if (ndenom > std::numeric_limits<int>::max() || ndenom < std::numeric_limits<int>::min() ||
-            nnume > std::numeric_limits<int>::max() || nnume < std::numeric_limits<int>::min()) {
-            throw std::overflow_error("Division causes overflow or underflow");
+        if (ndenom > numeric_limits<int>::max() || ndenom < numeric_limits<int>::min() ||
+            nnume > numeric_limits<int>::max() || nnume < numeric_limits<int>::min()) {
+            throw overflow_error("Division causes overflow or underflow");
         }
         copy1.reduce();
         copy2.reduce();
@@ -299,7 +299,7 @@ using namespace ariel;
                 fra.setDenominator(denominator);
                 return input;
             }
-            input.setstate(std::ios_base::failbit);
+            input.setstate(ios_base::failbit);
             return input;              
         }
     }
