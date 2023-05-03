@@ -4,14 +4,15 @@
 using namespace std;
 using namespace ariel;
 
+    //Parmetrized Constructor(int's)
     Fraction::Fraction(int numer, int denom){
-        if(numer!=denom){
+        if(numer!=denom){           // a \ b --> a != b
             if (((numer > numeric_limits<int>::max() || numer < numeric_limits<int>::min()) && denom != 1)
                 || ((denom > numeric_limits<int>::max() || denom < numeric_limits<int>::min()) && numer != 1)){
                 throw overflow_error("Numerator or denominator exceeds maximum integer value");
             }
         }
-        if(denom== 0){
+        if(denom== 0){              // a \ 0
             if(numer == 0){
                 _numerator=numer;
                 _denominator=denom;
@@ -21,22 +22,24 @@ using namespace ariel;
             }
         }
         else{
-            if(numer<0&&denom<0 || numer>0 && denom<0){       // -a / -b || a / -b
+            if(numer<0&&denom<0 || numer>0 && denom<0){       // -a \ -b || a \ -b
                 _numerator=-numer;
                 _denominator=-denom;
             }
-            else if(numer==denom){
+            else if(numer==denom){                          // a \ a --> a!=0
                 _numerator=1;
                 _denominator=1;
             }
-            else{                                           // -a / b || a / b
+            else{                                           // -a \ b || a \ b
                 _numerator=numer;
                 _denominator=denom; 
             }
         }      
     }
+    
+    //Parmetrized Constructor(double/float)
     Fraction::Fraction(double val){
-    int mult = pow(10, 3);        // 3 digits after the dot
+    int mult = pow(10, 3);        // for round to 3 digits after the dot
     int numer = static_cast<int>(round(val * mult));
     int denom = mult;
 
@@ -45,6 +48,7 @@ using namespace ariel;
     _denominator = denom / gcdv;
     }
 
+    //Side math methods
     int Fraction::gcd(int val1, int val2){
         if(val2==0){
             return abs(val1);
@@ -72,6 +76,8 @@ using namespace ariel;
         _denominator = denom / gcdval;
         return *this;
     }
+    
+    // Getters & Setters
     int Fraction::getNumerator(){
         return _numerator;
     }
@@ -85,6 +91,7 @@ using namespace ariel;
         _denominator=denom;
     }
 
+    //Arithmetic operators (Fraction or double/float)
     Fraction Fraction::operator+(const Fraction& other) const {
         int ndenom = lcm(_denominator, other._denominator);
         long long nnume = static_cast<long long>(_numerator) * (ndenom / _denominator) + static_cast<long long>(other._numerator) * (ndenom / other._denominator);
@@ -93,7 +100,6 @@ using namespace ariel;
         }
         return Fraction(static_cast<int>(nnume), ndenom).reduce();
     }
-
     Fraction Fraction::operator-(const Fraction& other) const {
         if (static_cast<long long>(_numerator) - other._numerator > numeric_limits<int>::max() ||
             static_cast<long long>(_numerator) - other._numerator < numeric_limits<int>::min() ||
@@ -103,8 +109,7 @@ using namespace ariel;
         }
         Fraction neg_other(-other._numerator, other._denominator);
         return *this + neg_other;
-    }
-   
+    }  
     Fraction Fraction::operator*(const Fraction& other) const {
         long long nnume = static_cast<long long>(_numerator) * other._numerator;
         long long ndenom = static_cast<long long>(_denominator) * other._denominator;
@@ -113,8 +118,7 @@ using namespace ariel;
             throw overflow_error("Multiplication causes overflow or underflow");
         }
         return Fraction(static_cast<int>(nnume), static_cast<int>(ndenom)).reduce();
-    }
-    
+    }   
     Fraction Fraction::operator/(const Fraction& other) const {
         if (other._numerator == 0) {
             throw runtime_error("Division by zero!");
@@ -132,7 +136,6 @@ using namespace ariel;
         copy2.reduce();
         return Fraction(static_cast<int>(nnume), static_cast<int>(ndenom)).reduce();
     }
-
     Fraction Fraction::operator+(const double &other) const{
         return *this + Fraction(other);
     }
@@ -148,15 +151,17 @@ using namespace ariel;
         }
         return *this / Fraction(other);
     }
+    
+    // Boolean operators
     bool Fraction::operator==(const Fraction &other) const {
-        if(_numerator==0&&other._numerator==0){
+        if(_numerator==0&&other._numerator==0){     // 0/a = 0/b
             return true;
         }
-        int gcdval = gcd(_numerator, _denominator);
+        int gcdval = gcd(_numerator, _denominator);     //Get gcd of both fractions,
         int ogcdval = gcd(other._numerator, other._denominator);
-        Fraction tmp1((int)(_numerator / gcdval),(int)(_denominator / gcdval));
+        Fraction tmp1((int)(_numerator / gcdval),(int)(_denominator / gcdval)); //try to reduce to fractions wiht gcd.
         Fraction tmp2((int)(other._numerator / ogcdval),(int)(other._denominator / ogcdval));
-        tmp1.reduce();
+        tmp1.reduce();      // check if reduced to the most
         tmp2.reduce();
         return (tmp1._numerator == tmp2._numerator && tmp1._denominator == tmp2._denominator);
     }
@@ -197,6 +202,7 @@ using namespace ariel;
     bool Fraction::operator!=(const Fraction& other) const {
     return !(*this == other);
     }
+    
     //prefix inc
     Fraction& Fraction::operator++(){
         _numerator+=_denominator;
@@ -219,6 +225,8 @@ using namespace ariel;
         _numerator-=_denominator;
         return copy;
     }
+    
+    // I/O operators
     ostream& ariel::operator<<(ostream& output, const Fraction& fra){
         Fraction copy=fra;
         if(fra._numerator>0&&fra._denominator<0){
@@ -304,6 +312,8 @@ using namespace ariel;
         }
     }
     
+
+    //Friend operator methods
     Fraction ariel::operator-(const double& fr1, const Fraction& fr2){
         Fraction tf1(fr1);
         return tf1-fr2;    
